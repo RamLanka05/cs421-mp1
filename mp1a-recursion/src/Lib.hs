@@ -33,17 +33,24 @@ tag3 = 24929
 --- ### mytake
 
 -- don't forget to put the type declaration or you will lose points!
-mytake = undefined
+mytake :: Int -> [a] -> [a]
+mytake _ [] = []
+mytake n _ | n <= 0 = []
+mytake n (x:xs) = x : mytake (n - 1) xs
 
 --- ### mydrop
 
 -- don't forget to put the type declaration or you will lose points!
-mydrop = undefined
+mydrop :: Int -> [a] -> [a]
+mydrop 0 xs = xs
+mydrop n [] = []
+mydrop n (x:xs) = mydrop (n-1) xs
 
 --- ### rev
 
 -- don't forget to put the type declaration or you will lose points!
-rev = undefined
+rev :: [a] -> [a]
+rev [] = []
 
 --- ### app
 
