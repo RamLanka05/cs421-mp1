@@ -3,6 +3,10 @@
 
 --- Relevant Files
 --- --------------
+{- HLINT ignore "Use foldr" -}
+{- HLINT ignore "Use map" -}
+{- HLINT ignore "Use infix" -}
+{- HLINT ignore "Use sum" -}
 
 module Lib where
 
@@ -35,62 +39,83 @@ tag3 = 24929
 -- don't forget to put the type declaration or you will lose points!
 mytake :: Int -> [a] -> [a]
 mytake _ [] = []
-mytake n _ | n <= 0 = []
+mytake n _ 
+    | n <= 0 = []
 mytake n (x:xs) = x : mytake (n - 1) xs
 
 --- ### mydrop
 
 -- don't forget to put the type declaration or you will lose points!
 mydrop :: Int -> [a] -> [a]
-mydrop 0 xs = xs
-mydrop n [] = []
-mydrop n (x:xs) = mydrop (n-1) xs
+mydrop _ [] = []
+mydrop n xs
+    | n <= 0 = xs
+mydrop n (_:xs) = mydrop (n - 1) xs
 
 --- ### rev
 
 -- don't forget to put the type declaration or you will lose points!
 rev :: [a] -> [a]
-rev [] = []
+rev list = accum list []
+  where
+    accum [] acc = acc
+    accum (x:xs) acc = accum xs (x:acc)
 
 --- ### app
 
 -- don't forget to put the type declaration or you will lose points!
-app = undefined
+app :: [a] -> [a] -> [a]
+app [] ys = ys
+app (x:xs) ys = x : app xs ys
 
 --- ### inclist
 
 -- don't forget to put the type declaration or you will lose points!
-inclist = undefined
+inclist :: Num a => [a] -> [a]
+inclist [] = []
+inclist (x:xs) = (x + 1) : inclist xs
 
 --- ### sumlist
 
 -- don't forget to put the type declaration or you will lose points!
-sumlist = undefined
+sumlist :: Num a => [a] -> a
+sumlist [] = 0
+sumlist (x:xs) = x + sumlist xs
 
 --- ### myzip
 
 -- don't forget to put the type declaration or you will lose points!
-myzip = undefined
+myzip :: [a] -> [b] -> [(a,b)]
+myzip _ [] = []
+myzip [] _ = []
+myzip (x:xs) (y:ys) = (x,y) : myzip xs ys
 
 --- ### addpairs
 
 -- don't forget to put the type declaration or you will lose points!
-addpairs = undefined
+addpairs :: (Num a) => [a] -> [a] -> [a]
+addpairs xs ys = addpair (myzip xs ys)
+  where
+    addpair [] = []
+    addpair ((x,y):zs) = (x + y) : addpair zs
 
 --- ### ones
 
 -- don't forget to put the type declaration or you will lose points!
-ones = undefined
+ones :: [Integer]
+ones = 1 : ones
 
 --- ### nats
 
 -- don't forget to put the type declaration or you will lose points!
-nats = undefined
+nats :: [Integer]
+nats = 0 : addpairs ones nats
 
 --- ### fib
 
 -- don't forget to put the type declaration or you will lose points!
-fib = undefined
+fib :: [Integer]
+fib = 0 : 1 : addpairs fib (tail fib)
 
 --- Set Theory
 --- ----------
@@ -98,22 +123,44 @@ fib = undefined
 --- ### add
 
 -- don't forget to put the type declaration or you will lose points!
-add = undefined
+add :: Ord a => a -> [a] -> [a]
+add x [] = [x]
+add x (y:ys)
+    | x < y = x : y : ys
+    | x == y = y : ys
+    | otherwise = y : add x ys
 
 --- ### union
 
 -- don't forget to put the type declaration or you will lose points!
-union = undefined
+union :: Ord a => [a] -> [a] -> [a]
+union xs [] = xs
+union [] ys = ys
+union (x:xs) (y:ys)
+    | x < y = x : union xs (y:ys)
+    | x == y = x : union xs ys
+    | otherwise = y : union (x:xs) ys
 
 --- ### intersect
 
 -- don't forget to put the type declaration or you will lose points!
-intersect = undefined
+intersect :: Ord a => [a] -> [a] -> [a]
+intersect _ [] = []
+intersect [] _ = []
+intersect (x:xs) (y:ys)
+    | x < y = intersect xs (y:ys)
+    | x == y = x : intersect xs ys
+    | otherwise = intersect (x:xs) ys
 
 --- ### powerset
 
 -- don't forget to put the type declaration or you will lose points!
-powerset = undefined
+powerset :: Ord a => [a] -> [[a]]
+powerset [] = [[]]
+powerset (x:xs) = union zs (P.map (add x) zs)
+  where
+    zs = powerset xs
+
 
 --- Higher Order Functions
 --- ----------------------
@@ -121,9 +168,11 @@ powerset = undefined
 --- ### inclist'
 
 -- don't forget to put the type declaration or you will lose points!
-inclist' = undefined
+inclist' :: Num a => [a] -> [a]
+inclist' = P.map (+1)
 
 --- ### sumlist'
 
 -- don't forget to put the type declaration or you will lose points!
-sumlist' = undefined
+sumlist' :: Num a => [a] -> a
+sumlist' = P.foldl (+) 0
