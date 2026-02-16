@@ -76,7 +76,7 @@ data SimpVal = IntVal Integer
              | BoolVal Bool
              | StrVal String
              | ExnVal String
-  deriving (Show)
+  deriving Show
 
 --- ### liftIntOp
 
